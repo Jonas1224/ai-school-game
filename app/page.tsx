@@ -628,7 +628,6 @@ export default function FlappyMLGame() {
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <div className="flex items-center gap-1 sm:gap-2 lg:gap-3">
               <div className="flex items-center gap-1 sm:gap-2">
-                <Brain className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-primary" />
                 <Gamepad2 className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-secondary" />
               </div>
               <div>
@@ -646,7 +645,7 @@ export default function FlappyMLGame() {
                     <CoinIcon size={20} className="sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
                     {coinCountAnimation.isAnimating ? coinCountAnimation.current : coins}
                   </div>
-                  <div className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground">Golden Coins</div>
+                  <div className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground">Gold Coins</div>
                 </div>
               </CardContent>
             </Card>
@@ -778,7 +777,7 @@ export default function FlappyMLGame() {
                     }`}
                   >
                     <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      <Brain className="h-3 w-3 lg:h-4 lg:w-4 text-purple-600" />
+                      <span className="h-3 w-3 lg:h-4 lg:w-4 text-purple-600 inline-flex items-center justify-center font-mono font-bold">&lt;/&gt;</span>
                       Details for Nerds
                     </h4>
                     <p className="text-xs lg:text-sm text-muted-foreground mb-2">
