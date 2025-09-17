@@ -7,6 +7,7 @@ import type { GameEngine, GameState } from "@/lib/game-engine"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Brain, Gamepad2, Settings, Trophy, Zap, AlertTriangle, X, ArrowDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { CoinIcon } from "@/components/ui/coin-icon"
 
 export type Level = "finetuning" | "underfitting" | "overfitting"
 
@@ -615,7 +616,7 @@ export default function FlappyMLGame() {
               animation: `coinFly 1s ease-out forwards`,
             }}
           >
-            🪙
+            <CoinIcon size={24} />
           </div>
         ))}
       </div>
@@ -642,10 +643,10 @@ export default function FlappyMLGame() {
               <CardContent className="p-1 sm:p-2 lg:p-3">
                 <div className="text-center">
                   <div className="text-sm sm:text-xl lg:text-2xl xl:text-3xl font-bold font-mono text-foreground flex items-center justify-center gap-1">
-                    <span className="text-amber-500">🪙</span>
+                    <CoinIcon size={20} className="sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
                     {coinCountAnimation.isAnimating ? coinCountAnimation.current : coins}
                   </div>
-                  <div className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground">Silver Coins</div>
+                  <div className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground">Golden Coins</div>
                 </div>
               </CardContent>
             </Card>
