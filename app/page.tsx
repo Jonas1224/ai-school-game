@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Brain, Gamepad2, Settings, Trophy, Zap, AlertTriangle, X, ArrowDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CoinIcon } from "@/components/ui/coin-icon"
+import { ChatButton } from "@/components/ui/chat-button"
+import { ChatModal } from "@/components/ui/chat-modal"
+import type { GameContext } from "@/types/game-context"
 
 export type Level = "finetuning" | "underfitting" | "overfitting"
 
@@ -78,6 +81,7 @@ export default function FlappyMLGame() {
   const [currentStep, setCurrentStep] = useState(1)
   const [visitedLevels, setVisitedLevels] = useState<Set<Level>>(new Set(["finetuning"]))
   const [guidanceCompletedLevels, setGuidanceCompletedLevels] = useState<Set<Level>>(new Set())
+  const [isChatOpen, setIsChatOpen] = useState(false)
 
   // Track animation triggers for current session to prevent multiple triggers
   const animationTriggeredRef = useRef<Record<Level, boolean>>({
@@ -436,6 +440,48 @@ export default function FlappyMLGame() {
     setGuidanceCompletedLevels(prev => new Set([...prev, currentLevel]))
   }
 
+  const handleChatOpen = () => {
+    setIsChatOpen(true)
+    if (gameEngine) {
+      gameEngine.pause()
+    }
+  }
+
+  const handleChatClose = () => {
+    setIsChatOpen(false)
+    if (gameEngine) {
+      gameEngine.resume()
+    }
+  }
+
+  const getGameContext = (): GameContext => {
+    const currentLevelConfig = levelData[currentLevel]
+    const coinsNeeded = currentLevel === "underfitting" ? 15 : currentLevel === "overfitting" ? 30 : 0
+
+    return {
+      currentLevel,
+      currentStep,
+      levelProgress,
+      gameState,
+      score,
+      coins,
+      dataCount,
+      dataRequirement: {
+        min: currentLevelConfig.minDataPoints,
+        max: currentLevelConfig.maxDataPoints,
+        timeRequired: `${Math.floor(currentLevelConfig.minDataPoints / 10)} seconds`
+      },
+      isRecording,
+      isAI,
+      trainingStatus,
+      showGuidance,
+      guidanceText: getGuidanceText(),
+      unlockedLevels: (Object.keys(levelData) as Level[]).filter(level =>
+        level === "finetuning" || (level === "underfitting" && coins >= 15) || (level === "overfitting" && coins >= 30)
+      )
+    }
+  }
+
   const getGuidanceText = () => {
     switch (currentStep) {
       case 1:
@@ -622,7 +668,7 @@ export default function FlappyMLGame() {
       </div>
 
       <header
-        className={`border-b border-border bg-card/50 backdrop-blur-sm transition-opacity duration-300 ${isKickoff ? "opacity-30 pointer-events-none" : "opacity-100"}`}
+        className={`border-b border-border bg-card/50 backdrop-blur-sm transition-opacity duration-300 ${isKickoff || isChatOpen ? "opacity-30 pointer-events-none" : "opacity-100"}`}
       >
         <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3">
           <div className="flex items-center justify-between mb-2 sm:mb-3">
@@ -694,7 +740,7 @@ export default function FlappyMLGame() {
             <Card
               className={`w-full bg-muted/50 border-border h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] xl:h-[600px] transition-all duration-300 ${
                 isKickoff ? "ring-1 ring-black shadow-xl" : ""
-              }`}
+              } ${isChatOpen ? "opacity-30" : ""}`}
             >
               <CardHeader className="pb-1 sm:pb-2 lg:pb-3">
                 <CardTitle className="text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg flex items-center gap-1 sm:gap-2">
@@ -818,11 +864,12 @@ export default function FlappyMLGame() {
               onHighScoreUpdate={handleHighScoreUpdate}
               currentScore={score}
               currentLevel={currentLevel}
+              isPaused={isChatOpen}
             />
           </div>
 
           <div
-            className={`w-[30%] flex-shrink-0 transition-opacity duration-300 ${isKickoff ? "opacity-30 pointer-events-none" : "opacity-100"}`}
+            className={`w-[30%] flex-shrink-0 transition-opacity duration-300 ${isKickoff || isChatOpen ? "opacity-30 pointer-events-none" : "opacity-100"}`}
           >
             <ControlPanel
               gameEngine={gameEngine}
@@ -844,6 +891,17 @@ export default function FlappyMLGame() {
         </div>
 
       </main>
+
+      {/* AI Chat System */}
+      <ChatButton
+        isOpen={isChatOpen}
+        onClick={() => isChatOpen ? handleChatClose() : handleChatOpen()}
+      />
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={handleChatClose}
+        getGameContext={getGameContext}
+      />
 
       <style jsx global>{`
         @keyframes coinFly {
