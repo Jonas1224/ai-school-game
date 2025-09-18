@@ -739,7 +739,7 @@ export default function FlappyMLGame() {
                     title={!unlocked ? `Need ${coinsNeeded} coins to unlock` : ""}
                   >
                     <Icon className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
-                    <span className="hidden sm:inline">{config.title.split(": ")[1]}</span>
+                    <span className="hidden sm:inline">{config.title}</span>
                     <span className="sm:hidden">
                       {level === "finetuning" ? "L1" : level === "underfitting" ? "L2" : "L3"}
                     </span>
